@@ -25,7 +25,7 @@ import java.io.File;
  * on 25.08.2016 18:24 as part of one2anothercopier project.
  */
 @Configuration
-@PropertySource("integration.properties")
+@PropertySource("${integration.properties.type}:${integration.properties}")
 public class IntegrationConfiguration {
 
     @Value("${directory.input}")
