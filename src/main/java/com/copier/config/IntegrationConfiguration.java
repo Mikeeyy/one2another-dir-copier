@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.dsl.SourcePollingChannelAdapterSpec;
@@ -25,7 +26,10 @@ import java.io.File;
  * on 25.08.2016 18:24 as part of one2anothercopier project.
  */
 @Configuration
-@PropertySource("${integration.properties.type}:${integration.properties}")
+@PropertySources({
+        @PropertySource(value = "classpath:${integration.properties.classpath}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${integration.properties.file}", ignoreResourceNotFound = true)
+})
 public class IntegrationConfiguration {
 
     @Value("${directory.input}")
