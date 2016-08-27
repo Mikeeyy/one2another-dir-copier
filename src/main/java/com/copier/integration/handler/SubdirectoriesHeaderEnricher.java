@@ -7,7 +7,7 @@ import java.io.File;
 import java.util.Map;
 
 /**
- * That class was created by Mikolaj Matejko
+ * That class was created by Mikeeyy
  * on 26.08.2016 19:08 as part of one2anothercopier project.
  */
 public class SubdirectoriesHeaderEnricher implements GenericHandler<File> {

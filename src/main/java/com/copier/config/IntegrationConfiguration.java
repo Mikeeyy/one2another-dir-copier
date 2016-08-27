@@ -21,7 +21,7 @@ import org.springframework.util.Assert;
 import java.io.File;
 
 /**
- * That class was created by Mikolaj Matejko
+ * That class was created by Mikeeyy
  * on 25.08.2016 18:24 as part of one2anothercopier project.
  */
 @Configuration
