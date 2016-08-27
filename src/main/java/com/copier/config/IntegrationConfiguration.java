@@ -25,7 +25,7 @@ import java.io.File;
  * on 25.08.2016 18:24 as part of one2anothercopier project.
  */
 @Configuration
-@PropertySource(value = "integration.properties")
+@PropertySource("integration.properties")
 public class IntegrationConfiguration {
 
     @Value("${directory.input}")
@@ -37,18 +37,23 @@ public class IntegrationConfiguration {
     @Value("${poller.period}")
     private int pollerPeriod;
 
-    private static final String HEADER_SUBDIRECTORIES = "subdirectories";
+    @Value("${poller.maxMessages}")
+    private long maxMessagesPerPoll;
 
-    private final ModifiedFileListFilter<File> modifiedFileListFilter;
+    private static final String HEADER_SUBDIRECTORIES = "subdirectories";
+    private final ModifiedFileListFilter modifiedFileListFilter;
 
     @Autowired
-    public IntegrationConfiguration(ModifiedFileListFilter<File> modifiedFileListFilter) {
+    public IntegrationConfiguration(ModifiedFileListFilter modifiedFileListFilter) {
         Assert.notNull(modifiedFileListFilter, "Parameter modifiedFileListFilter should not be null");
         this.modifiedFileListFilter = modifiedFileListFilter;
     }
 
+    /**
+     * Polling given directory for modified or new files and pushing them to the output directory
+     */
     @Bean
-    public IntegrationFlow pollingFlow() {
+    public IntegrationFlow copyingFilesFlow() {
         return IntegrationFlows
                 .from(fileMessageSource(), poller())
                 .handle(enrichSubdirectoriesHeader())
@@ -63,7 +68,7 @@ public class IntegrationConfiguration {
 
     @Bean
     public Consumer<SourcePollingChannelAdapterSpec> poller() {
-        return c -> c.poller(Pollers.fixedRate(pollerPeriod).maxMessagesPerPoll(100));
+        return c -> c.poller(Pollers.fixedRate(pollerPeriod).maxMessagesPerPoll(maxMessagesPerPoll));
     }
 
     @Bean
@@ -80,7 +85,7 @@ public class IntegrationConfiguration {
     }
 
     @Bean
-    public  FileWritingMessageHandler outboundAdapter() {
+    public FileWritingMessageHandler outboundAdapter() {
         return Files
                 .outboundAdapter(f -> outputDirectory + f.getHeaders().get(HEADER_SUBDIRECTORIES))
                 .autoCreateDirectory(true)

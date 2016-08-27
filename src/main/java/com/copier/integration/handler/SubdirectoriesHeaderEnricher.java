@@ -7,6 +7,8 @@ import java.io.File;
 import java.util.Map;
 
 /**
+ * Class resolves appropriate subdirectory of given file and saves it in given header
+ * <p>
  * That class was created by Mikeeyy
  * on 26.08.2016 19:08 as part of one2anothercopier project.
  */
@@ -25,12 +27,11 @@ public class SubdirectoriesHeaderEnricher implements GenericHandler<File> {
         String fileDirectory = unifyPath(payload.getParent());
         String subDirectories = findSubdirectories(inputPath, fileDirectory);
 
-        MessageBuilder<File> builder = MessageBuilder
+        return MessageBuilder
                 .withPayload(payload)
                 .copyHeaders(headers)
-                .setHeader(headerSubdirectory, subDirectories);
-
-        return builder.build();
+                .setHeader(headerSubdirectory, subDirectories)
+                .build();
     }
 
     private String findSubdirectories(String inputPath, String fileDirectory) {

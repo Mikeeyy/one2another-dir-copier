@@ -1,3 +1,4 @@
 directory.input=C:/Users/Desktop/a
 directory.output=C:/Users/Desktop/b
 poller.period=5000
+poller.maxMessages=100

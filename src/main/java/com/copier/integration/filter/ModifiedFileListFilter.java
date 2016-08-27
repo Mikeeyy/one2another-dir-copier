@@ -7,10 +7,13 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Filter passes only files which are new or were modified
+ */
 @Component
-public class ModifiedFileListFilter<F> extends AbstractFileListFilter<F> {
+public class ModifiedFileListFilter extends AbstractFileListFilter<File> {
 
-    private final Map<F, Long> fileModTime = new HashMap<>();
+    private final Map<File, Long> fileModTime = new HashMap<>();
 
     private final Object monitor = new Object();
 
@@ -18,22 +21,19 @@ public class ModifiedFileListFilter<F> extends AbstractFileListFilter<F> {
      * @see org.springframework.integration.file.filters.AbstractFileListFilter#accept(java.lang.Object)
      */
     @Override
-    protected boolean accept(F file) {
+    protected boolean accept(File file) {
         synchronized (this.monitor) {
             if (this.fileModTime.get(file) == null) {
-                // new file, never seen
-                fileModTime.put(file, ((File) file).lastModified());
+                fileModTime.put(file, file.lastModified());
                 return true;
             }
-            if (this.fileModTime.get(file).compareTo(((File) file).lastModified()) == 0) {
+            if (this.fileModTime.get(file).compareTo(file.lastModified()) == 0) {
                 return false;
             }
-            if (this.fileModTime.get(file).compareTo(((File) file).lastModified()) < 0) {
-                // file was modified, update timestamp
-                fileModTime.put(file, ((File) file).lastModified());
+            if (this.fileModTime.get(file).compareTo(file.lastModified()) < 0) {
+                fileModTime.put(file, file.lastModified());
                 return true;
             }
-            // modified in past
             return false;
         }
     }
