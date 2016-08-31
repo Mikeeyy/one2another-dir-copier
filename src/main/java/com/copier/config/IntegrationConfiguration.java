@@ -56,6 +56,9 @@ public class IntegrationConfiguration {
     @Value("${logger.file.date.pattern}")
     private String loggerFileDatePattern;
 
+    @Value("${statistics.log}")
+    private Boolean statisticsLog;
+
     private static final String HEADER_SUBDIRECTORIES = "subdirectories";
 
     private final ModifiedFileListFilter modifiedFileListFilter;
@@ -67,6 +70,7 @@ public class IntegrationConfiguration {
     public IntegrationConfiguration(ModifiedFileListFilter modifiedFileListFilter, SubdirectoriesResolver subdirectoriesResolver) {
         Assert.notNull(modifiedFileListFilter, "Parameter modifiedFileListFilter should not be null");
         Assert.notNull(subdirectoriesResolver, "Parameter subdirectoriesResolver should not be null");
+
         this.modifiedFileListFilter = modifiedFileListFilter;
         this.subdirectoriesResolver = subdirectoriesResolver;
     }
@@ -86,9 +90,13 @@ public class IntegrationConfiguration {
                 .get();
     }
 
+    /**
+     * If the parameter statisticsLog is true, method saves logs to given file
+     */
     @Bean
     public IntegrationFlow loggingToFileFlow() {
         return f -> f
+                .filter(p -> statisticsLog)
                 .enrichHeaders(h -> h
                         .header(FileHeaders.FILENAME, Paths.get(statisticsFile).getFileName().toString()))
                 .split()

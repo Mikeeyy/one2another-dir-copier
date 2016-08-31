@@ -1,5 +1,6 @@
 directory.input=C:/Users/Desktop/a
 directory.output=C:/Users/Desktop/b
+statistics.log=true
 statistics.file=C:/Users/Desktop/stats.txt
 poller.period=5000
 poller.maxMessages=100

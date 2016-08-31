@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
+import org.springframework.integration.file.filters.FileListFilter;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.File;
@@ -11,10 +12,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 /**
  * That class was created by Mikolaj Matejko
@@ -23,7 +22,7 @@ import static org.mockito.Mockito.when;
 @RunWith(SpringRunner.class)
 public class ModifiedFileListFilterTest {
 
-    private ModifiedFileListFilter filter;
+    private FileListFilter<File> filter;
 
     @Spy
     private List<File> files = new ArrayList<>();
@@ -42,21 +41,28 @@ public class ModifiedFileListFilterTest {
 
     @Test
     public void acceptTest() throws Exception {
-        files.forEach(file -> assertTrue("Each new file should be accepted", filter.accept(file)));
+        assertTrue("In single iteration not a single file should be passed",
+                filter.filterFiles(filesList2Array()).isEmpty());
 
-        files.forEach(file -> assertFalse("Each unmodified file should not be accepted", filter.accept(file)));
+        assertTrue("Each unmodified file should not be accepted",
+                filter.filterFiles(filesList2Array()).isEmpty());
 
         List<Integer> modifiedFilesIndexes = Arrays.asList(1, 3);
         modifiedFilesIndexes.forEach(f -> when(files.get(f).lastModified()).thenReturn(f + 6L));
 
         for (int i = 0; i < files.size(); i++) {
             if (modifiedFilesIndexes.contains(i))
-                assertTrue("Each modified file should be accepted", filter.accept(files.get(i)));
+                assertFalse("Each modified file should be accepted", filter.filterFiles(new File[]{filesList2Array()[i]}).isEmpty());
             else
-                assertFalse("Each unmodified file should not accepted", filter.accept(files.get(i)));
+                assertTrue("Each unmodified file should not accepted", filter.filterFiles(new File[]{filesList2Array()[i]}).isEmpty());
         }
 
-        files.forEach(file -> assertFalse("Each unmodified file should not be accepted", filter.accept(file)));
+        assertTrue("Each unmodified file should not be accepted",
+                filter.filterFiles(filesList2Array()).isEmpty());
+    }
+
+    private File[] filesList2Array() {
+        return files.toArray(new File[files.size()]);
     }
 
 }
