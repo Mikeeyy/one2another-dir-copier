@@ -40,7 +40,7 @@ public class SubdirectoriesResolverTest {
 
             String resolved = resolver.resolve(INPUT_PATH, file.getParent());
 
-            assertEquals(f, resolved, "Subdirectory should be correct");
+            assertEquals("Subdirectory should be correct", f, resolved);
         });
     }
 
